@@ -62,7 +62,15 @@ Web tracking data provides a powerful tool for social science research, enabling
 3. The input data section should link to a small example input file in the same repository that can be used to test the method (this test should be described in the section "How to Use").
 -->
 
-`webtrackR` accepts raw webtracking data as provided by GESIS and includes a sample dataset of raw webtracking data. 
+`webtrackR` accepts raw webtracking data as provided by GESIS and includes a sample dataset of raw webtracking data. At minimum, the raw data must contain a participant identifier (`panelist_id`), the visited `url`, and a `timestamp`. The bundled example dataset `testdt_tracking` illustrates this format:
+
+```{r}
+#| echo: false
+#| message: false
+library("webtrackR")
+data("testdt_tracking")
+knitr::kable(head(testdt_tracking, 5))
+```
 
 ## Output Data
 <!--
@@ -70,7 +78,7 @@ Web tracking data provides a powerful tool for social science research, enabling
 2. The output data section should link to a small example output file in the same repository that can be re-created (as far as the method is non-random) from the input data (as described in the section "How to Use").
 -->
 
-The functions in webtrackR return processed `wt_dt` objects (enhanced data frames) that contain enriched, cleaned, or summarized web tracking data. These objects remain in-memory within R and can be directly analyzed, visualized, or explicitly exported by the user into external file formats such as CSV or RDS.
+The functions in webtrackR return processed `wt_dt` objects (enhanced data frames) that contain enriched, cleaned, or summarized web tracking data. These objects remain in-memory within R and can be directly analyzed, visualized, or explicitly exported by the user into external file formats such as CSV or RDS. An abbreviated example of a summarized output object is shown at the end of the [Example Code](#example-code) section below.
 
 ```{r}
 #| eval: false
@@ -138,16 +146,23 @@ Once the data has been preprocessed and classified, it can be aggregated for ana
 
 All functions return updated `wt_dt` objects, which are simply enhanced data frames. These objects remain in memory in R and can be directly inspected, analyzed, or visualized.  
 
-By default, **webtrackR does not create output files**. If you wish to save the processed or summarized data, you must export it explicitly. For example:  
-
 ```{r}
+#| message: false
 library("webtrackR")
 
 # load example data and turn it into wt_dt
 data("testdt_tracking")
-my_wt_data <-as.wt_dt(testdt_tracking)
+my_wt_data <- as.wt_dt(testdt_tracking)
 
-# output the data as a csv
+# inspect the first rows of the wt_dt object
+knitr::kable(head(my_wt_data, 5))
+```
+
+By default, **webtrackR does not create output files**. If you wish to save the processed or summarized data, you must export it explicitly. For example:  
+
+```{r}
+#| eval: false
+# save the processed data explicitly if needed
 write.csv(my_wt_data, "processed_webtracking.csv", row.names = FALSE)
 ```
 
@@ -189,6 +204,9 @@ wt <- add_panelist_data(wt, testdt_survey_w)
 
 # aggregate number of visits by day and panelist, and by domain class
 wt_summ <- sum_visits(wt, timeframe = "date", visit_class = "type")
+
+# show an abbreviated example of the aggregated output
+knitr::kable(head(wt_summ, 5))
 ```
 
 ## Technical Details
